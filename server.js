@@ -39,15 +39,23 @@ function authenticate(data, cb) {
     if (err) {
       cb(null, false);  
     }else {
-      //req.decoded = decoded;
       cb(null, true);
+    }
+  });
+}
+
+function postAuthenticate(socket, data) {
+  jwt.verify(data.token, 'secret', function(err, decoded) {      
+    if (!err) {
+      socket.client.user = decoded;
     }
   });
 }
 
 require('socketio-auth')(io, {
   timeout:80,
-  authenticate: authenticate
+  authenticate: authenticate,
+  postAuthenticate: postAuthenticate
 });
 
 module.exports = server;
